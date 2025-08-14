@@ -21,12 +21,12 @@ Calculations and model training can be done on a standard laptop.
 3. Model overfitting
     Use cross-validation.
 ## Lifecycle Mapping
-- <Define prediction problem & scope> → Problem Framing & Scoping (Stage 01) → <README.md + stakeholder memo>.
-- <Collect and preprocess historical stock data> → Data Collection & Preprocessing (Stage 02) → <Cleaned dataset + data dictionary>.
-- <Explore data and features> → Exploratory Data Analysis (Stage 03) → <EDA notebook + feature summary>.
-- <Develop predictive model> → Modeling (Stage 04) → <Trained model + performance metrics>.
-- <Validate & test model> → Model Validation (Stage 05) → <Cross-validation results + error analysis>.
-- <Deploy predictions for daily use> → Deployment (Stage 06) → <Daily CSV + explanatory note>.
-- <Monitor model performance over time> → Monitoring & Maintenance (Stage 07) → <Performance report + alerts on anomalies>.
+- Define prediction problem & scope → Problem Framing & Scoping (Stage 01) → README.md + stakeholder memo.
+- Collect and preprocess historical stock data → Data Collection & Preprocessing (Stage 02) → Cleaned dataset + data dictionary.
+- Explore data and features → Exploratory Data Analysis (Stage 03) → EDA notebook + feature summary.
+- Develop predictive model → Modeling (Stage 04) → Trained model + performance metrics.
+- Validate & test model → Model Validation (Stage 05) → Cross-validation results + error analysis.
+- Deploy predictions for daily use → Deployment (Stage 06) → Daily CSV + explanatory note.
+- Monitor model performance over time → Monitoring & Maintenance (Stage 07) → Performance report + alerts on anomalies.
 ## Repo Plan
 /data/, /src/, /notebooks/, /docs/ ; cadence for updates
