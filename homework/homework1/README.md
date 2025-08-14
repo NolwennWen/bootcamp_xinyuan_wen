@@ -29,4 +29,7 @@ Calculations and model training can be done on a standard laptop.
 - Deploy predictions for daily use → Deployment (Stage 06) → Daily CSV + explanatory note.
 - Monitor model performance over time → Monitoring & Maintenance (Stage 07) → Performance report + alerts on anomalies.
 ## Repo Plan
-/data/, /src/, /notebooks/, /docs/ ; cadence for updates
+- /data/: raw and processed stock data.
+- /src/: Python scripts for data collection and modeling.
+- /notebooks/: Jupyter notebooks for exploratory data analysis.
+- /docs/: stakeholder memo, documentation, etc.
