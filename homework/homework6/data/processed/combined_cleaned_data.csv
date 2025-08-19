@@ -1,0 +1,4 @@
+numeric_col,category_col,price,date_str,category,MCAR_col,MAR_col,MNAR_col,date,numeric_scaled,numeric_standard
+0.0,A,0.0,2025-08-01,electronics,0.0,0.0,0.0,2025-08-01,0.0,0.0
+0.5,A,0.33333333333333326,,toys,0.5,0.0,1.0,,0.5,0.5
+1.0,C,1.0,2025-08-05,,1.0,0.0,0.5,2025-08-05,1.0,1.0
