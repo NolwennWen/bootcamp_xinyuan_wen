@@ -10,26 +10,31 @@ project/
 │
 ├── README.md
 │
+├── .env
+│
 ├── .gitignore
 │
 ├── requirements.txt <- Python dependencies
 │
 ├── data/
 │ ├── raw/ <- Raw stock data
-│ │ ├──api_source-yfinance_symbol-MSFT_20250820-200354.csv <- raw stock data pulled from yfinance for `SYMBOL=MSFT`
-│ │ └──MSFT_raw_20250820-205444.csv <- versioned copy of the raw CSV for reproducibility
+│ │ ├──api_source-yfinance_symbol-MSFT_*.csv <- raw stock data pulled from yfinance for `SYMBOL=MSFT`
+│ │ └──MSFT_raw_*.csv <- versioned copy of the raw CSV for reproducibility
 │ └── processed/ <- Cleaned & feature-engineered data
-│ │ ├──prices_20250820-205446.parquet <- processed Parquet version of raw stock data
+│ │ ├──prices_*.parquet <- processed Parquet version of raw stock data
 │ │ └──MSFT_preprocessed.csv <- cleaned data
 │
 ├── notebooks/
 │ ├──Stage_3_python_fundamentals_summary.ipynb
 │ ├──Stage_4_data_acquisition.ipynb
 │ ├──Stage_5_data_storage.ipynb
-│ └──Stage_6_data_processing.ipynb
+│ ├──Stage_6_data_processing.ipynb
+│ └──Stage_7_outliers_risk_assumptions.ipynb
 │
 ├── src/
 │ ├──utils.py
+│ ├──cleaning.py
+│ └──outliers.py
 │
 ├── docs/
 │ ├── stakeholder_memo.md
@@ -119,3 +124,32 @@ Preprocessing includes:
   - Standardizing categorical columns
   
 Code for preprocessing is located in `src/cleaning.py`
+
+## Outlier Assumptions and Implications
+
+1. Outliers
+
+- IQR multiplier k=1.5; Z threshold=3.0; winsor quantiles 5%/95%.
+- The stock price columns (open, high, low, close, adj_close) show no significant outliers, indicating that their distributions are relatively concentrated.
+- The trading volume column exhibits a few extreme values, but the number is small and both IQR and Z-score methods detect consistent points.
+- The Z-score method does not over-identify outliers in practice.
+- Always report thresholds and provide results **with and without** outliers.
+
+2. Sensitivity Analysis
+
+- A regression-based sensitivity analysis was performed on adj_close and volume to evaluate the impact of outliers on model results.
+- The R² is very low (0.08), indicating that the independent variable x has weak explanatory power for y.
+- The slope and intercept change little, suggesting that outliers do not significantly affect the overall trend.
+- Winsorization slightly improves the MAE, indicating that it mitigates the impact of a few extreme points.
+
+3. Assumptions
+
+- Extreme values are rare and do not represent valid underlying patterns.
+- The IQR and Z-score thresholds are appropriate for detecting meaningful outliers in stock price and volume data.
+- Winsorization is sufficient to mitigate extreme values without distorting overall trends.
+
+4. Potential Risks
+
+- Removing or modifying data could hide important market anomalies (e.g., flash crashes or spikes).
+- Overly aggressive filtering may reduce model accuracy for rare but significant events.
+- Analysts should verify whether flagged outliers correspond to actual market events or data errors.
