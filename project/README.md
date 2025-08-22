@@ -29,7 +29,9 @@ project/
 │ ├──Stage_4_data_acquisition.ipynb
 │ ├──Stage_5_data_storage.ipynb
 │ ├──Stage_6_data_processing.ipynb
-│ └──Stage_7_outliers_risk_assumptions.ipynb
+│ ├──Stage_7_outliers_risk_assumptions.ipynb
+│ ├──Stage_8_EDA.ipynb
+│ └──Stage_9_feature_engineering
 │
 ├── src/
 │ ├──utils.py
@@ -153,3 +155,46 @@ Code for preprocessing is located in `src/cleaning.py`
 - Removing or modifying data could hide important market anomalies (e.g., flash crashes or spikes).
 - Overly aggressive filtering may reduce model accuracy for rare but significant events.
 - Analysts should verify whether flagged outliers correspond to actual market events or data errors.
+
+## Feature Engineering Documentation
+
+1. Daily Return (daily_return)
+- Purpose: Measures the daily price change.
+- Impact: Helps the model capture short-term price fluctuations.
+
+2. Log Return (log_return)
+- Purpose: Measures the logarithmic ratio of consecutive daily prices.
+- Impact: Smoothly describes price changes, improving prediction of future trends.
+
+3. 5-day Rolling Volatility (volatility_5d)
+- Purpose: Standard deviation of daily returns over the past 5 days.
+- Impact: Reflects recent market volatility, aiding prediction of price swings.
+
+4. 5-day and 20-day Moving Averages (ma_5, ma_20)
+- Purpose: Average closing price over the past 5 and 20 days.
+- Impact: Shows short-term and mid-term trends, helping the model identify price direction.
+
+5. MA Spread (ma_spread)
+- Purpose: Difference between short-term and long-term moving averages.
+- Impact: Indicates trend strength and potential acceleration or reversal in price.
+
+6. 5-day Volume Rolling Mean (vol_mean_5)
+- Purpose: Average trading volume over the past 5 days.
+- Impact: Reflects market activity changes, signaling potential price movements.
+
+7. High-Low Spread (hl_spread)
+- Purpose: Difference between daily high and low prices.
+- Impact: Measures daily price range, helping the model understand price instability.
+
+8. Close-Open Difference (co_diff)
+- Purpose: Difference between daily close and open prices.
+- Impact: Captures daily price direction and magnitude, providing trend information.
+
+9. RSI 14-day (rsi)
+- Purpose: Relative Strength Index based on past 14 days (0-100).
+- Impact: Indicates potential overbought or oversold conditions, useful for short-term trend prediction.
+
+10. 5-day Momentum (momentum_5)
+- Purpose: Difference between current close and close 5 days ago.
+- Impact: Measures medium-term price momentum, helping assess continuation or reversal potential.
+
