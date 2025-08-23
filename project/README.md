@@ -198,3 +198,10 @@ Code for preprocessing is located in `src/cleaning.py`
 - Purpose: Difference between current close and close 5 days ago.
 - Impact: Measures medium-term price momentum, helping assess continuation or reversal potential.
 
+11. Log of Volume (log_volume)
+- Purpose: Applies a logarithmic transformation to the raw trading volume data.
+- Impact: Reduces the skewness and extreme range of volume values, making the data distribution more normal. This helps the model better capture the relationship between trading activity and price changes, rather than being overly influenced by occasional extreme volume spikes.
+
+12. 5-day Moving Average of RSI (rsi_ma5)
+- Purpose: Calculates the average value of the RSI indicator over the past 5 days.
+- Impact: Smooths out the short-term noise in the RSI signal, providing a clearer view of the underlying momentum trend. This helps the model distinguish between minor fluctuations and sustained overbought or oversold conditions, leading to more stable signals.
