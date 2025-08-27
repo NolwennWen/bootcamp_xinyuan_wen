@@ -16,31 +16,53 @@ project/
 │
 ├── requirements.txt <- Python dependencies
 │
+├── app.py
+│
 ├── data/
 │ ├── raw/ <- Raw stock data
-│ │ ├──api_source-yfinance_symbol-MSFT_*.csv <- raw stock data pulled from yfinance for `SYMBOL=MSFT`
-│ │ └──MSFT_raw_*.csv <- versioned copy of the raw CSV for reproducibility
+│ │ ├── api_source-yfinance_symbol-MSFT_*.csv <- raw stock data pulled from yfinance for `SYMBOL=MSFT`
+│ │ └── MSFT_raw_*.csv <- versioned copy of the raw CSV for reproducibility
 │ └── processed/ <- Cleaned & feature-engineered data
-│ │ ├──prices_*.parquet <- processed Parquet version of raw stock data
-│ │ └──MSFT_preprocessed.csv <- cleaned data
+│ │ ├── prices_*.parquet <- processed Parquet version of raw stock data
+│ │ ├── MSFT_preprocessed.csv <- cleaned data
+│ │ └── MSFT_features <- created features
 │
 ├── notebooks/
-│ ├──Stage_3_python_fundamentals_summary.ipynb
-│ ├──Stage_4_data_acquisition.ipynb
-│ ├──Stage_5_data_storage.ipynb
-│ ├──Stage_6_data_processing.ipynb
-│ ├──Stage_7_outliers_risk_assumptions.ipynb
-│ ├──Stage_8_EDA.ipynb
-│ └──Stage_9_feature_engineering
+│ ├── Stage_3_python_fundamentals_summary.ipynb
+│ ├── Stage_4_data_acquisition.ipynb
+│ ├── Stage_5_data_storage.ipynb
+│ ├── Stage_6_data_processing.ipynb
+│ ├── Stage_7_outliers_risk_assumptions.ipynb
+│ ├── Stage_8_EDA.ipynb
+│ ├── Stage_9_feature_engineering.ipynb
+│ ├── Stage_10&11_modeling&evaluation.ipynb
+│ └── final.ipynb
 │
 ├── src/
-│ ├──utils.py
-│ ├──cleaning.py
-│ └──outliers.py
+│ ├──__init__.py
+│ ├── utils.py
+│ ├── cleaning.py
+│ ├── outliers.py
+│ ├── eda.py
+│ ├── models.py
+│ └── features.py
 │
 ├── docs/
 │ ├── stakeholder_memo.md
 │ └── README.md
+│
+├── deliverables/
+│ ├── images/
+│ │ ├── baseline_residuals.png
+│ │ ├── prediction_vs_true.png
+│ │ ├── residual_distribution.png
+│ │ ├── rmse_bootstrap_ci.png
+│ │ └── rsi_residuals.png
+│ ├── final_report.md
+│ └── README.md
+│
+├── model/
+│ └── final_model.pkl
 
 /notebooks/: Jupyter notebooks for EDA & modeling
 /src/: Python scripts for data collection & modeling
@@ -205,3 +227,59 @@ Code for preprocessing is located in `src/cleaning.py`
 12. 5-day Moving Average of RSI (rsi_ma5)
 - Purpose: Calculates the average value of the RSI indicator over the past 5 days.
 - Impact: Smooths out the short-term noise in the RSI signal, providing a clearer view of the underlying momentum trend. This helps the model distinguish between minor fluctuations and sustained overbought or oversold conditions, leading to more stable signals.
+
+# Interpretation
+
+1. Linearity:
+- **Baseline Model (without RSI²)**: The residuals vs. fitted values plot shows a non-linear pattern, indicating that the model fails to capture the full relationship between the predictors and the target variable. This systematic deviation suggests missing non-linear effects in the feature set.
+- **With RSI² & RSI³ Model**: The residuals display a more random scatter around zero without obvious patterns. The introduction of the rsi_sq & rsi_cube significantly improves linearity, indicating a probable quadratic relationship between RSI and the target variable.
+
+2. Homoscedasticity:
+- **Baseline Model**: Exhibits heteroscedasticity. The spread of residuals changes systematically with fitted values. The "funnel shape" (wider spread at higher fitted values) violates the constant variance assumption, which may lead to inefficient estimates and unreliable inference.
+- **With RSI² & RSI³ Model**: Shows improved homoscedasticity with more consistent residual variance across different fitted value ranges. While not perfect, the variability is substantially more uniform, addressing one of the major limitations of the baseline model.
+
+3. Normality:
+- **Baseline Model**: The residual histogram shows right-skewness, and the Q-Q plot deviates significantly from the normality line, particularly in the tails. This non-normal distribution affects the validity of statistical tests and confidence intervals.
+- **With RSI² & RSI³ Model**: Demonstrates markedly improved normality. The residual distribution is more symmetric, and the Q-Q plot points align much closer to the reference line, though slight deviations remain in the extremes. This enhancement supports more reliable statistical inference.
+
+4. Independence:
+- Both models may exhibit residual autocorrelation since time series data was used without shuffling (shuffle=False). While no obvious time-based patterns are immediately visible in the residual plots, formal testing is recommended to assess potential time-dependent structures.
+
+5. Which model to trust and why?
+**The model with RSI² & RSI³ is more trustworthy**
+1.  **Substantially better explanatory power**: R² increased from 0.3570 to 0.4699, indicating the model captures substantially more variance in the target variable.
+2.  **Superior predictive accuracy**:  RMSE decreased by an order of magnitude from 0.038963 to 0.001252, reflecting much smaller prediction errors.
+3.  **Better compliance with linear regression assumptions**: Diagnostic plots show notable improvements in linearity, homoscedasticity, and normality, making the model's results more reliable for both interpretation and prediction.
+4.  **Meaningful feature transformation**: The polynomial RSI terms capture important non-linear relationships that were missed in the linear specification, suggesting that RSI has a curvilinear relationship with the target variable.
+
+## Evaluation & Risk Communication
+
+1. Key Assumptions
+- The linear regression model assumes a linear relationship between the input features and next-day closing price.
+- Residuals are approximately normally distributed and homoscedastic.
+- Features are accurately measured and outliers/extreme values are handled consistently.
+- Market conditions during the test period are similar to those in the training period.
+
+2. Risks and Limitations
+- Financial markets are highly volatile; linear models may fail to capture sudden regime shifts or nonlinear effects.
+- Residual patterns indicate occasional extreme deviations, suggesting sensitivity to outliers or rare events.
+- Missing or extreme values in features could distort predictions; care must be taken in preprocessing.
+- Model performance may degrade if features such as RSI or volatility behave differently than historically observed.
+
+3. Scenario & Sensitivity Commentary
+- **Baseline scenario** (original features) shows reasonable performance but higher RMSE and wider residual spread.
+- **RSI² & RSI³ scenario** improves RMSE slightly and reduces extreme residuals, indicating modest gains from nonlinear feature transformations.
+- Side-by-side comparison confirms that adding polynomial RSI terms stabilizes predictions for typical market conditions.
+- Bootstrap CI for RMSE indicates that uncertainty remains non-negligible, highlighting the importance of monitoring prediction reliability.
+
+4. Subgroup Observations
+- Residuals are generally consistent across the dataset, but extreme market events may disproportionately affect performance.
+- No significant subgroup-specific bias was detected in this analysis, but further evaluation on high-volatility periods is recommended.
+
+5. Business-Stakeholder Takeaways
+- **Prediction holds if** market behavior remains similar to historical training data and no extreme feature deviations occur.
+- **Model is sensitive to** sudden market shocks, outliers in RSI, and extreme volatility spikes.
+- Adding RSI² & RSI³ features is recommended for slight improvement in predictive stability, but continuous monitoring is advised.
+- Key takeaway charts (RMSE with bootstrap CI, residual boxplots) visually summarize model reliability and scenario comparison.
+- For decision framing, use the RSI²³ model as a guide under normal market conditions, but treat forecasts with caution during unusual events.
+

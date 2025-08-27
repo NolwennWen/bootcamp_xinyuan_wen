@@ -62,3 +62,47 @@ def calc_mean_std_logged(lst):
         mean, standard deviation
     """
     return calc_mean_std(lst)
+
+
+import pandas as pd
+import pathlib
+
+def ts():
+    return dt.datetime.now().strftime('%Y%m%d-%H%M%S')
+
+def safe_stamp():
+    return dt.datetime.now().strftime("%Y%m%d-%H%M%S")
+
+def safe_filename(prefix: str, meta: dict) -> str:
+    mid = "_".join([f"{k}-{str(v).replace(' ', '-')[:20]}" for k, v in meta.items()])
+    return f"{prefix}_{mid}_{safe_stamp()}.csv"
+
+def detect_format(path):
+    path = str(path).lower()
+    if path.endswith('.csv'):
+        return 'csv'
+    elif path.endswith(('.parquet', '.pq', '.parq')):
+        return 'parquet'
+    else:
+        raise ValueError(f"Unsupported format for: {path}")
+
+def write_df(df: pd.DataFrame, path):
+    path = pathlib.Path(path)
+    fmt = detect_format(path)
+    path.parent.mkdir(parents=True, exist_ok=True)
+    if fmt == 'csv':
+        df.to_csv(path, index=False)
+    else:
+        df.to_parquet(path)
+    return path
+
+def read_df(path):
+    path = pathlib.Path(path)
+    fmt = detect_format(path)
+    if fmt == 'csv':
+        df = pd.read_csv(path)
+        if 'date' in df.columns:
+            df['date'] = pd.to_datetime(df['date'])
+        return df
+    else:
+        return pd.read_parquet(path)

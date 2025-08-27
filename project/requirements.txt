@@ -3,5 +3,12 @@ pandas
 matplotlib
 seaborn
 scikit-learn
-missingno
-pathlib
+yfinance
+beautifulsoup4
+requests
+python-dotenv
+flask
+pickle-mixin
+pyarrow
+fastparquet
+scipy.stats
